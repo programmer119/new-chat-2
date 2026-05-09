@@ -451,6 +451,7 @@ button.sign-in {
 }
 
 .field {
+  position: relative;
   display: grid;
   gap: 6px;
   color: #3c4043;
@@ -471,6 +472,48 @@ button.sign-in {
 .field input:focus {
   border-color: #1a73e8;
   box-shadow: inset 0 0 0 1px #1a73e8;
+}
+
+.password-input.is-masked {
+  color: transparent;
+  caret-color: #202124;
+}
+
+.password-mask {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  height: 24px;
+  overflow: hidden;
+  color: #202124;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 2px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.password-input.is-visible + .password-mask,
+.password-input:placeholder-shown + .password-mask {
+  display: none;
+}
+
+.password-toggle {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  color: #3c4043;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.password-toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #1a73e8;
 }
 
 .login-error {

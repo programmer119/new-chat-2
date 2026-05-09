@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Static Gagagle search page">
     <title>Gagagle</title>
-    <link rel="stylesheet" href="styles.css?v=login-robust">
+    <link rel="stylesheet" href="styles.css?v=logout-mask">
   </head>
   <body>
     <div class="page">
@@ -91,7 +91,12 @@
             </label>
             <label class="field">
               <span>비밀번호</span>
-              <input id="loginPassword" name="loginPassword" type="password" autocomplete="current-password" required>
+              <input id="loginPassword" class="password-input" name="loginPassword" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+              <span id="passwordMask" class="password-mask" aria-hidden="true"></span>
+            </label>
+            <label class="password-toggle">
+              <input id="showPasswordToggle" type="checkbox">
+              <span>비밀번호 보기</span>
             </label>
             <p id="loginError" class="login-error" role="alert" hidden></p>
             <div class="login-actions">
@@ -119,6 +124,6 @@
       </footer>
     </div>
 
-    <script src="script.js?v=login-robust"></script>
+    <script src="script.js?v=logout-mask"></script>
   </body>
 </html>
