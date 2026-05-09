@@ -99,6 +99,11 @@ const searchIndex = [
   },
 ];
 
+const specialSearchMessages = new Map([
+  ["윤성우", "멋쟁이"],
+  ["윤성빈", "제일멋쟁이"],
+]);
+
 function normalizedQuery() {
   return searchInput.value.trim().replace(/\s+/g, " ");
 }
@@ -200,6 +205,13 @@ function setResultMode(isResultMode) {
 }
 
 function renderResults(query, shouldPushState = true) {
+  const specialMessage = specialSearchMessages.get(query);
+
+  if (specialMessage) {
+    alert(specialMessage);
+    return;
+  }
+
   const results = search(query);
   searchInput.value = query;
   updateSearchState();
