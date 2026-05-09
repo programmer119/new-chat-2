@@ -10,26 +10,26 @@
   <body>
     <div class="page">
       <header class="topbar" aria-label="상단 링크">
-        <nav class="topbar__left" aria-label="Google 서비스">
-          <a href="https://about.google/" rel="noopener">Google 정보</a>
-          <a href="https://store.google.com/" rel="noopener">스토어</a>
+        <nav class="topbar__left" aria-label="Gagagle 서비스">
+          <a href="#about">Gagagle 정보</a>
+          <a href="#index">검색 인덱스</a>
         </nav>
         <nav class="topbar__right" aria-label="사용자 메뉴">
-          <a href="https://mail.google.com/" rel="noopener">Gmail</a>
-          <a href="https://www.google.com/imghp" rel="noopener">이미지</a>
-          <button class="icon-button" type="button" aria-label="Google 앱" title="Google 앱">
+          <a href="#mail">Gagagle Mail</a>
+          <a href="#images">이미지</a>
+          <button class="icon-button" type="button" aria-label="Gagagle 앱" title="Gagagle 앱">
             <span class="apps-grid" aria-hidden="true"></span>
           </button>
-          <a class="sign-in" href="https://accounts.google.com/" rel="noopener">로그인</a>
+          <a class="sign-in" href="#signin">로그인</a>
         </nav>
       </header>
 
-      <main class="search-area">
+      <main id="appMain" class="search-area">
         <h1 class="logo" aria-label="Gagagle">
           <span class="logo__blue">G</span><span class="logo__red">a</span><span class="logo__yellow">g</span><span class="logo__blue">a</span><span class="logo__green">g</span><span class="logo__red">l</span><span class="logo__blue">e</span>
         </h1>
 
-        <form id="searchForm" class="search-form" action="https://www.google.com/search" method="get" role="search" autocomplete="off">
+        <form id="searchForm" class="search-form" action="./" method="get" role="search" autocomplete="off">
           <div class="search-box">
             <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9.5 4a5.5 5.5 0 0 1 4.38 8.83l4.15 4.14a.75.75 0 0 1-1.06 1.06l-4.14-4.15A5.5 5.5 0 1 1 9.5 4Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"></path>
@@ -63,21 +63,29 @@
           </div>
         </form>
 
-        <p class="language">Gagagle 제공 서비스: <a href="https://www.google.com/search?hl=en" rel="noopener">English</a></p>
+        <section id="resultsPanel" class="results-panel" aria-live="polite" hidden>
+          <div class="results-meta">
+            <p id="resultsSummary"></p>
+            <button id="backHomeButton" class="text-button" type="button">홈으로</button>
+          </div>
+          <div id="resultsList" class="results-list"></div>
+        </section>
+
+        <p class="language">Gagagle 제공 서비스: <a href="#english">English</a></p>
       </main>
 
       <footer class="footer">
         <div class="footer__country">대한민국</div>
         <div class="footer__links">
           <nav aria-label="비즈니스 링크">
-            <a href="https://www.google.com/intl/ko_kr/ads/" rel="noopener">광고</a>
-            <a href="https://www.google.com/services/" rel="noopener">비즈니스</a>
-            <a href="https://www.google.com/search/howsearchworks/" rel="noopener">검색의 원리</a>
+            <a href="#ads">광고</a>
+            <a href="#business">비즈니스</a>
+            <a href="#how-search-works">검색의 원리</a>
           </nav>
           <nav aria-label="정책 링크">
-            <a href="https://policies.google.com/privacy" rel="noopener">개인정보처리방침</a>
-            <a href="https://policies.google.com/terms" rel="noopener">약관</a>
-            <a href="https://www.google.com/preferences" rel="noopener">설정</a>
+            <a href="#privacy">개인정보처리방침</a>
+            <a href="#terms">약관</a>
+            <a href="#settings">설정</a>
           </nav>
         </div>
       </footer>
