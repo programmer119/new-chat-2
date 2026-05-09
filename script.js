@@ -414,7 +414,7 @@ loginForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const id = loginId.value.trim();
-  const password = loginPassword.value;
+  const password = loginPassword.value.trim();
 
   if (!authenticate(id, password)) {
     loginError.textContent = "아이디 또는 비밀번호가 올바르지 않습니다.";
