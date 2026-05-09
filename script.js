@@ -3,6 +3,7 @@ const searchInput = document.querySelector("#searchInput");
 const searchBox = document.querySelector(".search-box");
 const clearButton = document.querySelector("#clearButton");
 const luckyButton = document.querySelector("#luckyButton");
+const page = document.querySelector(".page");
 const appMain = document.querySelector("#appMain");
 const logo = document.querySelector(".logo");
 const actions = document.querySelector(".actions");
@@ -11,6 +12,13 @@ const resultsPanel = document.querySelector("#resultsPanel");
 const resultsSummary = document.querySelector("#resultsSummary");
 const resultsList = document.querySelector("#resultsList");
 const backHomeButton = document.querySelector("#backHomeButton");
+const loginView = document.querySelector("#loginView");
+const openLoginButton = document.querySelector("#openLoginButton");
+const loginForm = document.querySelector("#loginForm");
+const loginId = document.querySelector("#loginId");
+const loginPassword = document.querySelector("#loginPassword");
+const loginError = document.querySelector("#loginError");
+const cancelLoginButton = document.querySelector("#cancelLoginButton");
 
 const searchIndex = [
   {
@@ -105,6 +113,14 @@ const specialSearchMessages = new Map([
 ]);
 
 const luckyGameUrl = "https://programmer119.github.io/cdogs-sdl/";
+const authStorageKey = "gagagle-auth-user";
+const demoAccounts = new Map([
+  ["윤성우", "윤성우21"],
+  ["윤성빈", "윤성빈1"],
+  ["윤서빈", "윤서빈01"],
+]);
+
+let pendingAction = null;
 
 function normalizedQuery() {
   return searchInput.value.trim().replace(/\s+/g, " ");
@@ -120,6 +136,47 @@ function tokenize(value) {
 
 function updateSearchState() {
   searchBox.classList.toggle("has-value", normalizedQuery().length > 0);
+}
+
+function currentUser() {
+  return localStorage.getItem(authStorageKey);
+}
+
+function isLoggedIn() {
+  return Boolean(currentUser());
+}
+
+function updateLoginButton() {
+  const user = currentUser();
+  openLoginButton.textContent = user ? user : "로그인";
+}
+
+function showLogin(action = null) {
+  pendingAction = action;
+  page.classList.add("is-login");
+  loginView.hidden = false;
+  loginError.hidden = true;
+  loginError.textContent = "";
+  loginPassword.value = "";
+  loginId.focus();
+}
+
+function hideLogin() {
+  page.classList.remove("is-login");
+  loginView.hidden = true;
+}
+
+function requireLogin(action) {
+  if (isLoggedIn()) {
+    action();
+    return;
+  }
+
+  showLogin(action);
+}
+
+function authenticate(id, password) {
+  return demoAccounts.get(id) === password;
 }
 
 function scoreResult(item, tokens) {
@@ -332,20 +389,59 @@ searchForm.addEventListener("submit", (event) => {
     return;
   }
 
-  renderResults(query);
+  requireLogin(() => renderResults(query));
 });
 
 luckyButton.addEventListener("click", () => {
-  window.location.href = luckyGameUrl;
+  requireLogin(() => {
+    window.location.href = luckyGameUrl;
+  });
 });
 
 backHomeButton.addEventListener("click", goHome);
+
+openLoginButton.addEventListener("click", () => {
+  showLogin();
+});
+
+cancelLoginButton.addEventListener("click", () => {
+  pendingAction = null;
+  hideLogin();
+  searchInput.focus();
+});
+
+loginForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const id = loginId.value.trim();
+  const password = loginPassword.value;
+
+  if (!authenticate(id, password)) {
+    loginError.textContent = "아이디 또는 비밀번호가 올바르지 않습니다.";
+    loginError.hidden = false;
+    loginPassword.select();
+    return;
+  }
+
+  localStorage.setItem(authStorageKey, id);
+  updateLoginButton();
+  hideLogin();
+
+  const action = pendingAction;
+  pendingAction = null;
+
+  if (action) {
+    action();
+  } else {
+    searchInput.focus();
+  }
+});
 
 window.addEventListener("popstate", () => {
   const query = new URLSearchParams(window.location.search).get("q");
 
   if (query) {
-    renderResults(query, false);
+    requireLogin(() => renderResults(query, false));
   } else {
     setResultMode(false);
   }
@@ -354,7 +450,9 @@ window.addEventListener("popstate", () => {
 const initialQuery = new URLSearchParams(window.location.search).get("q");
 
 if (initialQuery) {
-  renderResults(initialQuery, false);
+  requireLogin(() => renderResults(initialQuery, false));
 } else {
   updateSearchState();
 }
+
+updateLoginButton();

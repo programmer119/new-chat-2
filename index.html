@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Static Gagagle search page">
     <title>Gagagle</title>
-    <link rel="stylesheet" href="styles.css?v=lucky-game">
+    <link rel="stylesheet" href="styles.css?v=login-gate">
   </head>
   <body>
     <div class="page">
@@ -20,7 +20,7 @@
           <button class="icon-button" type="button" aria-label="Gagagle 앱" title="Gagagle 앱">
             <span class="apps-grid" aria-hidden="true"></span>
           </button>
-          <a class="sign-in" href="#signin">로그인</a>
+          <button id="openLoginButton" class="sign-in" type="button">로그인</button>
         </nav>
       </header>
 
@@ -74,6 +74,34 @@
         <p class="language">Gagagle 제공 서비스: <a href="#english">English</a></p>
       </main>
 
+      <section id="loginView" class="login-view" aria-labelledby="loginTitle" hidden>
+        <div class="login-card">
+          <div class="login-brand" aria-label="Gagagle">
+            <span class="logo__blue">G</span><span class="logo__red">a</span><span class="logo__yellow">g</span><span class="logo__blue">a</span><span class="logo__green">g</span><span class="logo__red">l</span><span class="logo__blue">e</span>
+          </div>
+          <div class="login-copy">
+            <h2 id="loginTitle">로그인</h2>
+            <p>Gagagle 검색 계속하기</p>
+          </div>
+
+          <form id="loginForm" class="login-form" autocomplete="off">
+            <label class="field">
+              <span>아이디</span>
+              <input id="loginId" name="loginId" type="text" autocomplete="username" required>
+            </label>
+            <label class="field">
+              <span>비밀번호</span>
+              <input id="loginPassword" name="loginPassword" type="password" autocomplete="current-password" required>
+            </label>
+            <p id="loginError" class="login-error" role="alert" hidden></p>
+            <div class="login-actions">
+              <button id="cancelLoginButton" class="text-button" type="button">취소</button>
+              <button class="login-submit" type="submit">다음</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
       <footer class="footer">
         <div class="footer__country">대한민국</div>
         <div class="footer__links">
@@ -91,6 +119,6 @@
       </footer>
     </div>
 
-    <script src="script.js?v=lucky-game"></script>
+    <script src="script.js?v=login-gate"></script>
   </body>
 </html>

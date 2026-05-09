@@ -14,6 +14,10 @@
 
 정적 사이트라 서버 크롤러는 없으며, 먼저 `script.js`의 `searchIndex` 배열을 검색하고 이어서 위키백과 공개 검색 API 결과를 합쳐 표시합니다.
 
+## Demo Login
+
+검색 또는 `I'm Feeling Lucky`를 실행하려면 임시 계정으로 로그인해야 합니다. 로그인 성공 상태는 브라우저 `localStorage`에 저장되어 이후 검색에서는 다시 확인하지 않습니다.
+
 ## GitHub Pages
 
 1. 이 폴더의 파일을 GitHub 저장소 루트에 올립니다.
