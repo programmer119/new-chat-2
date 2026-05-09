@@ -126,6 +126,10 @@ function normalizedQuery() {
   return searchInput.value.trim().replace(/\s+/g, " ");
 }
 
+function cleanCredential(value) {
+  return value.trim().normalize("NFC");
+}
+
 function tokenize(value) {
   return value
     .toLocaleLowerCase("ko-KR")
@@ -176,7 +180,7 @@ function requireLogin(action) {
 }
 
 function authenticate(id, password) {
-  return demoAccounts.get(id) === password;
+  return demoAccounts.get(cleanCredential(id)) === cleanCredential(password);
 }
 
 function scoreResult(item, tokens) {
@@ -413,8 +417,8 @@ cancelLoginButton.addEventListener("click", () => {
 loginForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const id = loginId.value.trim();
-  const password = loginPassword.value.trim();
+  const id = cleanCredential(loginId.value);
+  const password = cleanCredential(loginPassword.value);
 
   if (!authenticate(id, password)) {
     loginError.textContent = "아이디 또는 비밀번호가 올바르지 않습니다.";
