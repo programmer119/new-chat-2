@@ -6,15 +6,13 @@
 
 - `index.html`: 페이지 구조와 검색 폼
 - `styles.css`: Gagagle 메인 화면 레이아웃/반응형 스타일
-- `script.js`: 검색어 정리, 지우기 버튼, I'm Feeling Lucky 동작
+- `script.js`: 로컬 검색 인덱스, 랭킹, 결과 렌더링, 지우기 버튼, I'm Feeling Lucky 동작
 
 ## Search
 
-검색어를 입력하고 Enter 또는 `Gagagle 검색` 버튼을 누르면 실제 Google 검색 결과로 이동합니다.
+검색어를 입력하고 Enter 또는 `Gagagle 검색` 버튼을 누르면 외부 검색엔진으로 이동하지 않고 브라우저 안에서 자체 인덱스를 검색합니다.
 
-```text
-https://www.google.com/search?q=검색어
-```
+정적 사이트라 서버 크롤러는 없으며, 검색 대상은 `script.js`의 `searchIndex` 배열에 들어 있는 문서입니다.
 
 ## GitHub Pages
 

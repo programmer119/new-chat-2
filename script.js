@@ -3,23 +3,237 @@ const searchInput = document.querySelector("#searchInput");
 const searchBox = document.querySelector(".search-box");
 const clearButton = document.querySelector("#clearButton");
 const luckyButton = document.querySelector("#luckyButton");
+const appMain = document.querySelector("#appMain");
+const logo = document.querySelector(".logo");
+const actions = document.querySelector(".actions");
+const language = document.querySelector(".language");
+const resultsPanel = document.querySelector("#resultsPanel");
+const resultsSummary = document.querySelector("#resultsSummary");
+const resultsList = document.querySelector("#resultsList");
+const backHomeButton = document.querySelector("#backHomeButton");
+
+const searchIndex = [
+  {
+    title: "Gagagle 검색의 원리",
+    url: "#how-search-works",
+    site: "gagagle.local",
+    description: "Gagagle은 정적 사이트 안에 들어 있는 로컬 인덱스를 분석해서 제목, 설명, 태그 일치도 순서로 결과를 보여줍니다.",
+    keywords: ["gagagle", "검색", "원리", "랭킹", "인덱스", "정적 사이트"],
+  },
+  {
+    title: "GitHub Pages 배포 가이드",
+    url: "https://docs.github.com/pages",
+    site: "docs.github.com",
+    description: "정적 HTML, CSS, JavaScript 파일을 GitHub Pages에 배포하는 공식 문서입니다.",
+    keywords: ["github", "pages", "배포", "정적", "사이트", "호스팅"],
+  },
+  {
+    title: "MDN Web Docs",
+    url: "https://developer.mozilla.org/",
+    site: "developer.mozilla.org",
+    description: "HTML, CSS, JavaScript 웹 표준을 배울 수 있는 개발자 문서입니다.",
+    keywords: ["html", "css", "javascript", "웹", "문서", "개발"],
+  },
+  {
+    title: "JavaScript 검색 엔진 만들기",
+    url: "#javascript-search",
+    site: "gagagle.local",
+    description: "브라우저에서 배열 기반 인덱스를 토큰화하고 점수를 계산해 검색 결과를 만드는 방법입니다.",
+    keywords: ["javascript", "검색", "엔진", "토큰", "점수", "브라우저"],
+  },
+  {
+    title: "HTML 기본 구조",
+    url: "#html-basics",
+    site: "gagagle.local",
+    description: "웹 페이지의 문서 구조, 접근성 속성, 검색 폼 구성에 필요한 기본 HTML 요소를 정리했습니다.",
+    keywords: ["html", "폼", "검색창", "접근성", "문서"],
+  },
+  {
+    title: "CSS 반응형 레이아웃",
+    url: "#css-responsive",
+    site: "gagagle.local",
+    description: "모바일과 데스크톱 화면에서 검색창과 결과 목록이 안정적으로 보이도록 만드는 CSS 패턴입니다.",
+    keywords: ["css", "반응형", "레이아웃", "모바일", "디자인"],
+  },
+  {
+    title: "Git 사용법",
+    url: "https://git-scm.com/docs",
+    site: "git-scm.com",
+    description: "커밋, 브랜치, push, remote 등 정적 사이트 배포에 필요한 Git 명령을 확인할 수 있습니다.",
+    keywords: ["git", "커밋", "브랜치", "push", "remote", "배포"],
+  },
+  {
+    title: "웹 접근성 시작하기",
+    url: "https://www.w3.org/WAI/fundamentals/accessibility-intro/",
+    site: "w3.org",
+    description: "키보드 사용, 스크린 리더, 명확한 라벨처럼 누구나 쓸 수 있는 웹을 만드는 기본 원칙입니다.",
+    keywords: ["접근성", "aria", "키보드", "스크린 리더", "웹"],
+  },
+  {
+    title: "Gagagle 개인정보처리방침",
+    url: "#privacy",
+    site: "gagagle.local",
+    description: "현재 Gagagle 검색은 서버로 검색어를 보내지 않고 브라우저 안에서만 결과를 계산합니다.",
+    keywords: ["개인정보", "검색어", "로컬", "브라우저", "보안"],
+  },
+  {
+    title: "이미지 검색 준비 중",
+    url: "#images",
+    site: "gagagle.local",
+    description: "이미지 검색은 아직 연결 전이며, 현재 버전에서는 텍스트 검색 결과를 우선 제공합니다.",
+    keywords: ["이미지", "검색", "준비", "기능"],
+  },
+  {
+    title: "Gagagle 광고",
+    url: "#ads",
+    site: "gagagle.local",
+    description: "검색 결과에 광고를 섞지 않은 깨끗한 로컬 검색 경험을 제공합니다.",
+    keywords: ["광고", "검색", "결과", "로컬"],
+  },
+  {
+    title: "정적 사이트란?",
+    url: "#static-site",
+    site: "gagagle.local",
+    description: "서버 프로그램 없이 HTML, CSS, JavaScript 파일만으로 동작하는 웹사이트입니다.",
+    keywords: ["정적", "사이트", "html", "css", "javascript", "github pages"],
+  },
+];
 
 function normalizedQuery() {
   return searchInput.value.trim().replace(/\s+/g, " ");
+}
+
+function tokenize(value) {
+  return value
+    .toLocaleLowerCase("ko-KR")
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .split(/\s+/)
+    .filter(Boolean);
 }
 
 function updateSearchState() {
   searchBox.classList.toggle("has-value", normalizedQuery().length > 0);
 }
 
-function goToGoogle(path, params) {
-  const url = new URL(path, "https://www.google.com");
+function scoreResult(item, tokens) {
+  const title = item.title.toLocaleLowerCase("ko-KR");
+  const description = item.description.toLocaleLowerCase("ko-KR");
+  const site = item.site.toLocaleLowerCase("ko-KR");
+  const keywords = item.keywords.join(" ").toLocaleLowerCase("ko-KR");
 
-  for (const [key, value] of Object.entries(params)) {
-    url.searchParams.set(key, value);
+  return tokens.reduce((score, token) => {
+    let nextScore = score;
+
+    if (title === token) nextScore += 80;
+    if (title.includes(token)) nextScore += 40;
+    if (keywords.includes(token)) nextScore += 26;
+    if (description.includes(token)) nextScore += 16;
+    if (site.includes(token)) nextScore += 10;
+
+    return nextScore;
+  }, 0);
+}
+
+function makeSnippet(text, tokens) {
+  const lowerText = text.toLocaleLowerCase("ko-KR");
+  const firstMatch = tokens
+    .map((token) => lowerText.indexOf(token))
+    .filter((index) => index >= 0)
+    .sort((a, b) => a - b)[0];
+
+  if (firstMatch === undefined) {
+    return text;
   }
 
-  window.location.href = url.toString();
+  const start = Math.max(0, firstMatch - 38);
+  const end = Math.min(text.length, firstMatch + 92);
+  const prefix = start > 0 ? "... " : "";
+  const suffix = end < text.length ? " ..." : "";
+
+  return `${prefix}${text.slice(start, end)}${suffix}`;
+}
+
+function search(query) {
+  const tokens = tokenize(query);
+
+  if (tokens.length === 0) {
+    return [];
+  }
+
+  return searchIndex
+    .map((item) => ({
+      ...item,
+      score: scoreResult(item, tokens),
+      snippet: makeSnippet(item.description, tokens),
+    }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, "ko-KR"));
+}
+
+function createResultItem(item) {
+  const article = document.createElement("article");
+  article.className = "result-item";
+
+  const site = document.createElement("div");
+  site.className = "result-site";
+  site.textContent = item.site;
+
+  const title = document.createElement("a");
+  title.className = "result-title";
+  title.href = item.url;
+  title.textContent = item.title;
+
+  const snippet = document.createElement("p");
+  snippet.className = "result-snippet";
+  snippet.textContent = item.snippet;
+
+  article.append(site, title, snippet);
+  return article;
+}
+
+function setResultMode(isResultMode) {
+  appMain.classList.toggle("is-results", isResultMode);
+  resultsPanel.hidden = !isResultMode;
+  actions.hidden = isResultMode;
+  language.hidden = isResultMode;
+  logo.hidden = false;
+}
+
+function renderResults(query, shouldPushState = true) {
+  const results = search(query);
+  searchInput.value = query;
+  updateSearchState();
+  setResultMode(true);
+  resultsList.replaceChildren();
+
+  if (shouldPushState) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("q", query);
+    window.history.pushState({ query }, "", url);
+  }
+
+  if (results.length === 0) {
+    resultsSummary.textContent = `"${query}"에 대한 검색 결과가 없습니다.`;
+
+    const empty = document.createElement("div");
+    empty.className = "empty-result";
+    empty.textContent = "다른 검색어를 입력하거나 Gagagle 인덱스에 새 문서를 추가해보세요.";
+    resultsList.append(empty);
+    return;
+  }
+
+  resultsSummary.textContent = `검색어 "${query}"에 대한 결과 ${results.length}개`;
+  results.forEach((item) => resultsList.append(createResultItem(item)));
+}
+
+function goHome() {
+  searchInput.value = "";
+  updateSearchState();
+  setResultMode(false);
+  resultsList.replaceChildren();
+  resultsSummary.textContent = "";
+  window.history.pushState({}, "", window.location.pathname);
+  searchInput.focus();
 }
 
 searchInput.addEventListener("input", updateSearchState);
@@ -31,29 +245,50 @@ clearButton.addEventListener("click", () => {
 });
 
 searchForm.addEventListener("submit", (event) => {
+  event.preventDefault();
   const query = normalizedQuery();
 
   if (!query) {
-    event.preventDefault();
     searchInput.focus();
     return;
   }
 
-  searchInput.value = query;
+  renderResults(query);
 });
 
 luckyButton.addEventListener("click", () => {
   const query = normalizedQuery();
+  const [topResult] = search(query);
 
   if (!query) {
     searchInput.focus();
     return;
   }
 
-  goToGoogle("/search", {
-    q: query,
-    btnI: "I",
-  });
+  if (topResult) {
+    window.location.href = topResult.url;
+    return;
+  }
+
+  renderResults(query);
 });
 
-updateSearchState();
+backHomeButton.addEventListener("click", goHome);
+
+window.addEventListener("popstate", () => {
+  const query = new URLSearchParams(window.location.search).get("q");
+
+  if (query) {
+    renderResults(query, false);
+  } else {
+    setResultMode(false);
+  }
+});
+
+const initialQuery = new URLSearchParams(window.location.search).get("q");
+
+if (initialQuery) {
+  renderResults(initialQuery, false);
+} else {
+  updateSearchState();
+}
