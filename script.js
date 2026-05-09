@@ -158,7 +158,7 @@ function makeSnippet(text, tokens) {
   return `${prefix}${text.slice(start, end)}${suffix}`;
 }
 
-function search(query) {
+function searchLocal(query) {
   const tokens = tokenize(query);
 
   if (tokens.length === 0) {
@@ -173,6 +173,59 @@ function search(query) {
     }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, "ko-KR"));
+}
+
+function stripHtml(value) {
+  const template = document.createElement("template");
+  template.innerHTML = value;
+  return template.content.textContent || "";
+}
+
+async function searchWikipedia(query) {
+  const url = new URL("https://ko.wikipedia.org/w/api.php");
+  url.searchParams.set("origin", "*");
+  url.searchParams.set("action", "query");
+  url.searchParams.set("list", "search");
+  url.searchParams.set("format", "json");
+  url.searchParams.set("srlimit", "8");
+  url.searchParams.set("srsearch", query);
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Search request failed");
+  }
+
+  const data = await response.json();
+
+  return (data.query?.search || []).map((item) => ({
+    title: item.title,
+    url: `https://ko.wikipedia.org/wiki/${encodeURIComponent(item.title.replaceAll(" ", "_"))}`,
+    site: "ko.wikipedia.org",
+    snippet: stripHtml(item.snippet),
+    score: item.size || 1,
+  }));
+}
+
+async function search(query) {
+  const localResults = searchLocal(query);
+
+  try {
+    const wikiResults = await searchWikipedia(query);
+    const seen = new Set(localResults.map((item) => item.url));
+    const uniqueWikiResults = wikiResults.filter((item) => {
+      if (seen.has(item.url)) {
+        return false;
+      }
+
+      seen.add(item.url);
+      return true;
+    });
+
+    return [...localResults, ...uniqueWikiResults];
+  } catch (error) {
+    return localResults;
+  }
 }
 
 function createResultItem(item) {
@@ -204,7 +257,18 @@ function setResultMode(isResultMode) {
   logo.hidden = false;
 }
 
-function renderResults(query, shouldPushState = true) {
+function setLoadingState(query) {
+  setResultMode(true);
+  resultsList.replaceChildren();
+  resultsSummary.textContent = `"${query}" 검색 중...`;
+
+  const loading = document.createElement("div");
+  loading.className = "empty-result";
+  loading.textContent = "Gagagle 검색기가 결과를 모으고 있습니다.";
+  resultsList.append(loading);
+}
+
+async function renderResults(query, shouldPushState = true) {
   const specialMessage = specialSearchMessages.get(query);
 
   if (specialMessage) {
@@ -212,11 +276,9 @@ function renderResults(query, shouldPushState = true) {
     return;
   }
 
-  const results = search(query);
   searchInput.value = query;
   updateSearchState();
-  setResultMode(true);
-  resultsList.replaceChildren();
+  setLoadingState(query);
 
   if (shouldPushState) {
     const url = new URL(window.location.href);
@@ -224,12 +286,15 @@ function renderResults(query, shouldPushState = true) {
     window.history.pushState({ query }, "", url);
   }
 
+  const results = await search(query);
+  resultsList.replaceChildren();
+
   if (results.length === 0) {
     resultsSummary.textContent = `"${query}"에 대한 검색 결과가 없습니다.`;
 
     const empty = document.createElement("div");
     empty.className = "empty-result";
-    empty.textContent = "다른 검색어를 입력하거나 Gagagle 인덱스에 새 문서를 추가해보세요.";
+    empty.textContent = "다른 검색어를 입력해보세요. 네트워크가 막혀 있으면 외부 검색 결과가 표시되지 않을 수 있습니다.";
     resultsList.append(empty);
     return;
   }
@@ -268,14 +333,15 @@ searchForm.addEventListener("submit", (event) => {
   renderResults(query);
 });
 
-luckyButton.addEventListener("click", () => {
+luckyButton.addEventListener("click", async () => {
   const query = normalizedQuery();
-  const [topResult] = search(query);
 
   if (!query) {
     searchInput.focus();
     return;
   }
+
+  const [topResult] = await search(query);
 
   if (topResult) {
     window.location.href = topResult.url;
