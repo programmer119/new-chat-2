@@ -114,11 +114,11 @@ const specialSearchMessages = new Map([
 
 const luckyGameUrl = "https://programmer119.github.io/cdogs-sdl/";
 const authStorageKey = "gagagle-auth-user";
-const demoAccounts = new Map([
-  ["윤성우", "윤성우21"],
-  ["윤성빈", "윤성빈1"],
-  ["윤서빈", "윤서빈01"],
-]);
+const demoAccounts = {
+  "윤성우": "윤성우21",
+  "윤성빈": "윤성빈1",
+  "윤서빈": "윤서빈01",
+};
 
 let pendingAction = null;
 
@@ -127,7 +127,7 @@ function normalizedQuery() {
 }
 
 function cleanCredential(value) {
-  return value.trim().normalize("NFC");
+  return value.normalize("NFC").replace(/\s/g, "");
 }
 
 function tokenize(value) {
@@ -180,7 +180,7 @@ function requireLogin(action) {
 }
 
 function authenticate(id, password) {
-  return demoAccounts.get(cleanCredential(id)) === cleanCredential(password);
+  return demoAccounts[cleanCredential(id)] === cleanCredential(password);
 }
 
 function scoreResult(item, tokens) {
