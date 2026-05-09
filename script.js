@@ -104,6 +104,8 @@ const specialSearchMessages = new Map([
   ["윤성빈", "제일멋쟁이"],
 ]);
 
+const luckyGameUrl = "https://programmer119.github.io/cdogs-sdl/";
+
 function normalizedQuery() {
   return searchInput.value.trim().replace(/\s+/g, " ");
 }
@@ -333,22 +335,8 @@ searchForm.addEventListener("submit", (event) => {
   renderResults(query);
 });
 
-luckyButton.addEventListener("click", async () => {
-  const query = normalizedQuery();
-
-  if (!query) {
-    searchInput.focus();
-    return;
-  }
-
-  const [topResult] = await search(query);
-
-  if (topResult) {
-    window.location.href = topResult.url;
-    return;
-  }
-
-  renderResults(query);
+luckyButton.addEventListener("click", () => {
+  window.location.href = luckyGameUrl;
 });
 
 backHomeButton.addEventListener("click", goHome);
