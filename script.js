@@ -17,8 +17,10 @@ const openLoginButton = document.querySelector("#openLoginButton");
 const loginForm = document.querySelector("#loginForm");
 const loginId = document.querySelector("#loginId");
 const loginPassword = document.querySelector("#loginPassword");
+const passwordMask = document.querySelector("#passwordMask");
 const loginError = document.querySelector("#loginError");
 const cancelLoginButton = document.querySelector("#cancelLoginButton");
+const showPasswordToggle = document.querySelector("#showPasswordToggle");
 
 const searchIndex = [
   {
@@ -114,11 +116,11 @@ const specialSearchMessages = new Map([
 
 const luckyGameUrl = "https://programmer119.github.io/cdogs-sdl/";
 const authStorageKey = "gagagle-auth-user";
-const demoAccounts = new Map([
-  ["윤성우", "윤성우21"],
-  ["윤성빈", "윤성빈1"],
-  ["윤서빈", "윤서빈01"],
-]);
+const demoAccounts = [
+  { id: "윤성우", password: "윤성우21" },
+  { id: "윤성빈", password: "윤성빈1" },
+  { id: "윤서빈", password: "윤서빈01" },
+];
 
 let pendingAction = null;
 
@@ -127,7 +129,9 @@ function normalizedQuery() {
 }
 
 function cleanCredential(value) {
-  return value.trim().normalize("NFC");
+  return String(value)
+    .normalize("NFC")
+    .replace(/[\s\u200B-\u200D\uFEFF]/g, "");
 }
 
 function tokenize(value) {
@@ -152,7 +156,8 @@ function isLoggedIn() {
 
 function updateLoginButton() {
   const user = currentUser();
-  openLoginButton.textContent = user ? user : "로그인";
+  openLoginButton.textContent = user ? `${user} 로그아웃` : "로그인";
+  openLoginButton.setAttribute("aria-label", user ? `${user} 로그아웃` : "로그인");
 }
 
 function showLogin(action = null) {
@@ -162,6 +167,9 @@ function showLogin(action = null) {
   loginError.hidden = true;
   loginError.textContent = "";
   loginPassword.value = "";
+  showPasswordToggle.checked = false;
+  loginPassword.type = "text";
+  updatePasswordVisibility();
   loginId.focus();
 }
 
@@ -180,7 +188,23 @@ function requireLogin(action) {
 }
 
 function authenticate(id, password) {
-  return demoAccounts.get(cleanCredential(id)) === cleanCredential(password);
+  const cleanId = cleanCredential(id);
+  const cleanPassword = cleanCredential(password);
+
+  return demoAccounts.some((account) => {
+    return cleanCredential(account.id) === cleanId && cleanCredential(account.password) === cleanPassword;
+  });
+}
+
+function passwordSymbolCount(value) {
+  return Array.from(value.normalize("NFC")).length;
+}
+
+function updatePasswordVisibility() {
+  const isVisible = showPasswordToggle.checked;
+  loginPassword.classList.toggle("is-visible", isVisible);
+  loginPassword.classList.toggle("is-masked", !isVisible);
+  passwordMask.textContent = "●".repeat(passwordSymbolCount(loginPassword.value));
 }
 
 function scoreResult(item, tokens) {
@@ -405,6 +429,13 @@ luckyButton.addEventListener("click", () => {
 backHomeButton.addEventListener("click", goHome);
 
 openLoginButton.addEventListener("click", () => {
+  if (isLoggedIn()) {
+    localStorage.removeItem(authStorageKey);
+    updateLoginButton();
+    goHome();
+    return;
+  }
+
   showLogin();
 });
 
@@ -413,6 +444,14 @@ cancelLoginButton.addEventListener("click", () => {
   hideLogin();
   searchInput.focus();
 });
+
+showPasswordToggle.addEventListener("change", () => {
+  updatePasswordVisibility();
+  loginPassword.focus();
+});
+
+loginPassword.addEventListener("input", updatePasswordVisibility);
+loginPassword.addEventListener("compositionend", updatePasswordVisibility);
 
 loginForm.addEventListener("submit", (event) => {
   event.preventDefault();
