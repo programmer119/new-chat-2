@@ -46,6 +46,10 @@ button {
   cursor: pointer;
 }
 
+button.sign-in {
+  border: 0;
+}
+
 .page {
   min-height: 100vh;
   display: grid;
@@ -391,6 +395,110 @@ button {
   padding: 15px;
 }
 
+.login-view {
+  min-height: calc(100vh - 60px);
+  display: grid;
+  place-items: center;
+  padding: 36px 20px;
+}
+
+.login-card {
+  width: min(100%, 860px);
+  min-height: 384px;
+  display: grid;
+  grid-template-columns: minmax(240px, .9fr) minmax(280px, 1fr);
+  gap: 36px;
+  padding: 42px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.login-brand {
+  margin-bottom: 24px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -2px;
+}
+
+.login-copy h2 {
+  margin: 0 0 12px;
+  color: #202124;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.login-copy p {
+  margin: 0;
+  color: #202124;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.login-form {
+  align-self: end;
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  color: #3c4043;
+  font-size: 13px;
+}
+
+.field input {
+  width: 100%;
+  height: 54px;
+  padding: 13px 15px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  color: #202124;
+  font-size: 16px;
+  outline: 0;
+}
+
+.field input:focus {
+  border-color: #1a73e8;
+  box-shadow: inset 0 0 0 1px #1a73e8;
+}
+
+.login-error {
+  margin: -4px 0 0;
+  color: #d93025;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.login-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.login-submit {
+  min-width: 78px;
+  height: 36px;
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  background: #1a73e8;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-submit:hover {
+  background: #1b66c9;
+}
+
+.page.is-login .search-area,
+.page.is-login .footer {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .topbar {
     padding: 6px 12px;
@@ -443,6 +551,18 @@ button {
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .login-card {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 32px 24px;
+    border: 0;
+  }
+
+  .login-form {
+    align-self: start;
   }
 }
 
